@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import { createServer } from "node:http";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
@@ -487,9 +488,36 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 // ── Start ──
 
+const PORT = parseInt(process.env.PORT || "8080", 10);
+
 async function main() {
-  const transport = new StdioServerTransport();
+  const transport = new StreamableHTTPServerTransport({
+    sessionIdGenerator: undefined, // stateless mode
+  });
+
   await server.connect(transport);
+
+  const httpServer = createServer(async (req, res) => {
+    // Health check
+    if (req.method === "GET" && req.url === "/") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ status: "ok", server: "text-tools-mcp", version: "1.0.0" }));
+      return;
+    }
+
+    // MCP endpoint
+    if (req.url === "/mcp" || req.url === "/sse" || req.url === "/message") {
+      await transport.handleRequest(req, res);
+      return;
+    }
+
+    res.writeHead(404);
+    res.end("Not found");
+  });
+
+  httpServer.listen(PORT, () => {
+    console.log(`text-tools-mcp listening on port ${PORT}`);
+  });
 }
 
 main().catch((err) => {
