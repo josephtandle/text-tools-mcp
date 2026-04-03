@@ -1,0 +1,13 @@
+{
+  "name": "text-tools-mcp",
+  "version": "1.0.0",
+  "description": "Text utility tools for AI — slugify, word count, case conversion, markdown, base64, and more",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

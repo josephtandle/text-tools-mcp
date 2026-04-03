@@ -1,0 +1,20 @@
+name: text-tools-mcp
+display_name: "Text Utility Swiss Army Knife"
+description: "20+ text manipulation tools for AI workflows — slugify, case convert, base64, markdown, word count, and more"
+version: "1.0.0"
+runtime: node18
+entry: src/index.js
+category: tools
+tags: [text, utilities, formatting, encoding]
+pricing:
+  tiers:
+    - name: free
+      price: 0
+      limits:
+        requests_per_month: 500
+        rate_limit_per_second: 5
+    - name: pro
+      price: 5
+      limits:
+        requests_per_month: 50000
+        rate_limit_per_second: 50
